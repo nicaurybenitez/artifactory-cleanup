@@ -1,93 +1,93 @@
-# Artifactory cleanup #
+# Artifactory Cleanup #
 
-`artifactory-cleanup` is a tool for cleaning artifacts in Jfrog Artifactory.
+`artifactory-cleanup` es una herramienta la limpieza de artefactos en "Jfrog Artifactory".
 
 # Tables of Contents
 
 <!-- toc -->
 
-- [Installation](#installation)
-- [Usage](#usage)
-  * [Commands](#commands)
-  * [Available Rules](#available-rules)
-  * [Artifact cleanup policies](#artifactory-cleanup-policies)
+- [Instalación](#instalación)
+- [Uso](#uso)
+  * [Comandos](#comandos)
+  * [Reglas Disponibles](#reglas-disponibles)
+  * [Políticas de Limpieza de Artefactos](#políticas-de-limpieza-de-artefactos)
   
 <!-- tocstop -->
 
-# Installation
-Upgrade/install to the newest available version:
+# Instalación
+Actualiza/instala la versión más reciente disponible:
 ```bash
-# Directly from git
+# Directamente desde git
 python3 -mpip install git+https://github.com//nicaurybenitez/artifactory-cleanup.git
 
-# To be able to change files
+# Si quieres modificar algún archivo
 git clone https://github.com//nicaurybenitez/artifactory-cleanup.git
 cd artifactory-cleanup
 python3 -mpip install -e .
 ```
 
-# Usage
+# Uso
 
-Suppose you want to remove all artifacts older than N days from 'reponame'.
-You should take the following steps:
+Suponiendo que deseas remover todos los artefactos con "n" días de antiguedad.
+Puedes seguir los siguientes pasos:
 
-1. Install `artifactory-cleanup`
-2. Сreate a python file, for example, `reponame.py` with the following contents:
+1. Instala `artifactory-cleanup`
+2. Сrea un archivo python, por ejemplo, `reponame.py` con el siguiente contenido:
 ```python
 from artifactory_cleanup import rules
 from artifactory_cleanup.rules import CleanupPolicy
 
 RULES = [
 
-    # ------ ALL REPOS --------
+    # ------ BORRAR ARCHIVOS CON 30 DIAS DE ANTIGUEDAD EN EL REPOSITORIO 'reponame' --------
     CleanupPolicy(
-       'Delete files older than 30 days',
+       'Borrar archivos con más de 30 días',
         rules.repo('reponame'),
         rules.delete_older_than(days=30),
     ),
 ]
 ```
-3. Run the command to SHOW (not remove) artifacts that will be deleted:
+3. Ejecuta el siguiente comando para MOSTRAR los artefactos que serían borrados por la regla:
 ```bash
 artifactory-cleanup --user user --password password --artifactory-server https://repo.example.com/artifactory --config reponame.py
 ```
-4. Add `--destroy` flag to REMOVE artifacts
+4. Agrega `--destroy` para REMOVER los artefactos
 ```bash
 artifactory-cleanup --destroy --user user --password password --artifactory-server https://repo.example.com/artifactory --config reponame.py
 ```
 
-## Commands ##
+## Comandos ##
 
 ```bash
 # Debug
-# debug run - only print founded artifacts. it do not delete
+# Ejecución en modo "debug" - sólo imprime los artefactos encontrados. No los borra
 artifactory-cleanup --user user --password password --artifactory-server https://repo.example.com/artifactory --config reponame.py
 
-# Clean up empty folder
+# Borrar Directorio Vacío
 # --remove-empty-folder
-# You need to use the plugin https://github.com/jfrog/artifactory-user-plugins/tree/master/cleanup/deleteEmptyDirs to delete empty folders
+# Necesitas usar el plugin https://github.com/jfrog/artifactory-user-plugins/tree/master/cleanup/deleteEmptyDirs para borrar directorios vacíos
 artifactory-cleanup --remove-empty-folder --user user --password password --artifactory-server https://repo.example.com/artifactory
 
-# Debug run only for ruletestname. Find any *ruletestname*
-# debug run - only print founded artifacts. it do not delete
+# Ejecución en modo "debug" solo para la regla `ruletestname`.
+# Ejecución en modo "debug" - sólo imprime los artefactos encontrados. No los borra
 artifactory-cleanup --rule-name ruletestname --user user --password password --artifactory-server https://repo.example.com/artifactory --config reponame.py
 
-# REMOVE
-# For remove artifacts use --destroy
+# REMOVER
+# Para eliminar artefactos utiliza `--destroy`
 artifactory-cleanup --destroy --user user --password password --artifactory-server https://repo.example.com/artifactory  --config reponame.py
 ```
 
-## Available Rules ##
+## Reglas Disponibles ##
 
-All rules are imported from the `rules` module.
-See also [List of available cleaning rules](docs/RULES)
+Todas las reglas son importadas del módulo `rules`.
+Revisa también [Lista de Reglas Disponibles](docs/RULES)
 
-## Artifact cleanup policies ##
+## Políticas de Limpieza de Artefactos ##
 
-To add a cleaning policy you need:
+Para agregar una política de limpieza necesitas:
 
-- Create a python file, for example, `reponame.py`. `artifacroty-cleanup` imports the variable `RULES`, so you can make a python package.
-- Add a cleanup rule from the [available cleanup rules](docs/RULES).
+- Сrea un archivo python, por ejemplo, `reponame.py`. `artifacroty-cleanup` importará la variable `RULES`.
+- Agrega una regla de la [Lista de Reglas Disponibles](docs/RULES).
 
 ```python
 from artifactory_cleanup import rules
@@ -96,12 +96,12 @@ from artifactory_cleanup.rules import CleanupPolicy
 RULES = [
 
     CleanupPolicy(
-       'Delete all * .tmp repositories older than 7 days',
+       'Borra todos los repositorios `* .tmp` con más de 7 días de antiguedad',
         rules.repo_by_mask('*. tmp'),
         rules.delete_older_than(days = 7),
     ),
     CleanupPolicy(
-        'Delete all images older than 30 days from docker-registry exclude latest, release',
+        'Borra todas las imágenes docker con más de 30 días de antiguedad de `docker-registry` excluyendo `latest` y `release`',
         rules.repo('docker-registry'),
         rules.exclude_docker_images(['*:latest', '*:release*']),
         rules.delete_docker_images_not_used(days=30),
