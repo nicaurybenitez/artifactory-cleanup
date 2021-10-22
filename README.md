@@ -18,10 +18,10 @@
 Upgrade/install to the newest available version:
 ```bash
 # Directly from git
-python3 -mpip install git+https://github.com/devopshq/artifactory-cleanup.git
+python3 -mpip install git+https://github.com//nicaurybenitez/artifactory-cleanup.git
 
 # To be able to change files
-git clone https://github.com/devopshq/artifactory-cleanup.git
+git clone https://github.com//nicaurybenitez/artifactory-cleanup.git
 cd artifactory-cleanup
 python3 -mpip install -e .
 ```
