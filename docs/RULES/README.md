@@ -1,28 +1,28 @@
-# Available Rules
+# Reglas Disponibles
 
-## common - rules that apply to all repositories
+## Comunes - Reglas que aplican a todos los repositorios
 
 | Name | Description |
 | --- | --- |
-| `delete_older_than(days=N)` | Deletes artifacts that are older than N days |
-| `delete_without_downloads()` | Deletes artifacts that have not been downloaded |
-| `delete_older_than_n_days_without_downloads(days=N)` | Deletes artifacts that are older than N days and have not been downloaded |
-| `repo('reponame')` | The rule applies to a specific repository |
-| `repo_by_mask('*.banned')` | Rule applies to mask repositories |
-| `property_eq(property_key, property_value)`| Delete repository artifacts only with a specific property value (property_name is the name of the parameter, property_value is the value).|
-| `property_neq(property_key, property_value)`| Delete repository artifacts only if the value != specified. If there is no value, delete it anyway. Allows you to specify the deletion flag `do_not_delete = 1`|
+| `delete_older_than(days=N)` | Borra artefactos con más de N días de antiguedad. |
+| `delete_without_downloads()` | Borra artefactos que no han sido descargados. |
+| `delete_older_than_n_days_without_downloads(days=N)` | Borra artefactos con más de N días de antiguedad y no han sido descargados. |
+| `repo('reponame')` | La regla aplica específicamente al repositorio `reponame`. |
+| `repo_by_mask('*.banned')` | La regla aplica a los repositorios que coincidan con la máscara `*.banned`. |
+| `property_eq(property_key, property_value)`| Borra los artefactos del repositorio que contengan específicamente el valor `property_value` en el parámetro `property_key`. |
+| `property_neq(property_key, property_value)`| Borra los artefactos del repositorio que NO contengan específicamente el valor `property_value` en el parámetro `property_key`. |
 
-## docker - cleanup rules for docker images
+## Docker - Reglas que aplican para las imágenes docker
 
 | Name | Description |
 | ---        | --- |
-| `delete_docker_images_older_than(days=N)` | Delete docker images that are older than N days |
-| `delete_docker_images_older_than_n_days_without_downloads(days=N)` | Deletes docker images that are older than N days and have not been downloaded |
+| `delete_docker_images_older_than(days=N)` | Borra las imágenes docker con más de N días de antiguedad. |
+| `delete_docker_images_older_than_n_days_without_downloads(days=N)` | Borra las imágenes docker con más de N días de antiguedad y no han sido descargados. |
 
-## filters - rules with different filters
+## Filtros - Reglas con diferentes filtros
 
 | Name | Description | 
 | --- | --- |
-| `filter_by_path_mask('my/path*')` | All rules apply only to artifacts with a given path pattern |
-| `filter_without_path_mask('master*'), filter_without_path_mask(['release*', 'master*'])` | DOES NOT apply to artifacts containing the given patterns in the PATH (maybe list, str) |
-| `filter_without_filename_mask('*.nupkg*')` | DOES NOT apply to artifacts containing the given data in the NAME (can be list, str) |
+| `filter_by_path_mask('my/path*')` | Aplica la regla sólo a los artefactos cuya ruta concida con el patrón de ruta especificado. |
+| `filter_without_path_mask('master*'), filter_without_path_mask(['release*', 'master*'])` | Aplica la regla sólo a los artefactos cuya ruta NO concida con el patrón especificado. (puede ser list, str) |
+| `filter_without_filename_mask('*.nupkg*')` | Aplica la regla sólo a los artefactos cuyo nombre NO concida con el patrón especificado. (puede ser list, str)  |
