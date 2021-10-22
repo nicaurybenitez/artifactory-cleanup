@@ -5,7 +5,7 @@ RULES = [
 
     # ------ ALL REPOS --------
     CleanupPolicy(
-        'Очистка всех *.tmp - репозиториев',
+        'Clean All *.tmp - Repositorys',
         rules.repo_by_mask('*.tmp'),
         rules.delete_older_than(days=7),
     ),
