@@ -172,13 +172,12 @@ class keep_latest_n_version_images_by_property(Rule):
             version = re.findall(self.custom_regexp, property)
             if len(version) == 1:
                 version_splitted = version[0].split('.')
-                key = artifact['path'] + '/' + version_splitted[0]
+                #key = artifact['path'] + '/' + version_splitted[0]
+                key = artifact['path'].replace(version[0],'') + version_splitted[0]
                 key += ".".join(version_splitted[:self.number_of_digits_in_version])
                 artifacts_by_path_and_name[key].append([version_splitted[0], artifact])
-
         for artifactory_with_version in artifacts_by_path_and_name.values():
             artifactory_with_version.sort(key=lambda x: [int(x) for x in x[0].split('.')])
-
             good_artifact_count = len(artifactory_with_version) - self.count
             if good_artifact_count < 0:
                 good_artifact_count = 0
@@ -186,7 +185,9 @@ class keep_latest_n_version_images_by_property(Rule):
             good_artifacts = artifactory_with_version[good_artifact_count:]
             for artifact in good_artifacts:
                 self.remove_artifact(artifact[1], result_artifact)
-
+        for artifact in result_artifact:
+            artifact['path'], docker_tag = artifact['path'].rsplit('/', 1)
+            artifact['name'] = docker_tag
         return result_artifact
 
 
