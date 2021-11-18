@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 from datetime import date, timedelta
 from teamcity import is_running_under_teamcity
-
+from datetime import datetime
 from artifactory import ArtifactoryPath
 from artifactory_cleanup.context_managers import get_context_managers
 from artifactory_cleanup.rules.base import Rule
@@ -254,6 +254,44 @@ class delete_docker_image_if_not_contained_in_properties(RuleForDocker):
                                                      })
 
         return result_docker_images
+class keep_latest_n_version_images_by_modified(Rule):
+    r"""
+    Leaves ``count`` Docker images ordering them by date.
+    """
+
+    def __init__(self, count):
+        self.count = count
+
+    def _filter_result(self, result_artifact):
+        artifacts_by_path_and_name = defaultdict(list)
+        for artifact in result_artifact[:]:
+        
+            modified_date = datetime.strptime(artifact['modified'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            modified_epoch = int((modified_date - datetime(1970, 1, 1)).total_seconds())
+            
+            base_path, version = artifact['path'].rsplit('/', 1)
+            key = artifact['path'].replace(version,'') 
+            #key = artifact['path'].replace(version,'') +str(modified_epoch)
+            artifacts_by_path_and_name[key].append([modified_epoch, artifact])
+           
+            print(artifacts_by_path_and_name.values()) 
+
+        for artifactory_with_version in artifacts_by_path_and_name.values():
+            artifactory_with_version.sort()
+            #artifactory_with_version.sort(key=lambda x: [int(x) for x in x[0]])
+            good_artifact_count = len(artifactory_with_version) - self.count
+            if good_artifact_count < 0:
+                good_artifact_count = 0
+
+            good_artifacts = artifactory_with_version[good_artifact_count:]
+            for artifact in good_artifacts:
+                self.remove_artifact(artifact[1], result_artifact)
+                
+        for artifact in result_artifact:
+            artifact['path'], docker_tag = artifact['path'].rsplit('/', 1)
+            artifact['name'] = docker_tag
+            
+        return result_artifact
 
 
 class delete_docker_image_if_not_contained_in_properties_value(RuleForDocker):
@@ -280,6 +318,8 @@ class delete_docker_image_if_not_contained_in_properties_value(RuleForDocker):
                                       if x.startswith(self.properties_prefix)))
 
         return properties_values
+
+
 
     def _filter_result(self, result_artifact):
         images = self.get_docker_images_list(self.docker_repo)
