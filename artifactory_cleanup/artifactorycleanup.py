@@ -95,6 +95,7 @@ class ArtifactoryCleanup(cli.Application):
         self._destroy_or_verbose()
 
         artifactory_session = requests.Session()
+        artifactory_session.verify = False
         artifactory_session.auth = HTTPBasicAuth(self._user, self._password)
 
         # Validate that all rules is CleanupPolicy
